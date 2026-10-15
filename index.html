@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>诗画流体 · 春江花月夜</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#02010a;color:#e8e2f5;
+  display:flex;align-items:center;justify-content:center;
+}
+/* 16:9 舞台 */
+.stage{
+  position:relative;
+  width:min(100vw,calc(100vh * 16 / 9));
+  height:min(100vh,calc(100vw * 9 / 16));
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%,rgba(124,58,237,.42) 0%,transparent 62%),
+    radial-gradient(ellipse 55% 45% at 85% 85%,rgba(16,185,129,.28) 0%,transparent 60%),
+    linear-gradient(160deg,#0a0520 0%,#12082a 50%,#05020f 100%);
+  overflow:hidden;
+}
+/* 星空 */
+.stage::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(1.6px 1.6px at 6% 8%,rgba(216,180,254,.9),transparent),
+    radial-gradient(1.2px 1.2px at 18% 22%,rgba(196,181,253,.6),transparent),
+    radial-gradient(1.6px 1.6px at 32% 12%,rgba(233,213,255,.75),transparent),
+    radial-gradient(1.2px 1.2px at 46% 30%,rgba(192,132,252,.6),transparent),
+    radial-gradient(1.6px 1.6px at 62% 18%,rgba(216,180,254,.85),transparent),
+    radial-gradient(1.2px 1.2px at 78% 26%,rgba(233,213,255,.55),transparent),
+    radial-gradient(1.6px 1.6px at 92% 12%,rgba(196,181,253,.75),transparent),
+    radial-gradient(1.2px 1.2px at 10% 48%,rgba(216,180,254,.55),transparent),
+    radial-gradient(1.6px 1.6px at 26% 58%,rgba(192,132,252,.65),transparent),
+    radial-gradient(1.2px 1.2px at 42% 66%,rgba(233,213,255,.55),transparent),
+    radial-gradient(1.6px 1.6px at 58% 54%,rgba(216,180,254,.75),transparent),
+    radial-gradient(1.2px 1.2px at 74% 62%,rgba(196,181,253,.55),transparent),
+    radial-gradient(1.6px 1.6px at 88% 50%,rgba(233,213,255,.7),transparent),
+    radial-gradient(1.2px 1.2px at 8% 78%,rgba(192,132,252,.55),transparent),
+    radial-gradient(1.6px 1.6px at 22% 88%,rgba(216,180,254,.75),transparent),
+    radial-gradient(1.2px 1.2px at 40% 94%,rgba(196,181,253,.55),transparent),
+    radial-gradient(1.6px 1.6px at 56% 86%,rgba(233,213,255,.75),transparent),
+    radial-gradient(1.2px 1.2px at 72% 92%,rgba(192,132,252,.6),transparent),
+    radial-gradient(1.6px 1.6px at 88% 82%,rgba(216,180,254,.8),transparent);
+  background-size:320px 320px;
+  opacity:.85;
+}
+/* 顶部品牌条 */
+.topbar{
+  position:absolute;top:3.5%;left:5%;right:5%;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:1.4vh;color:#c4b5fd;
+  z-index:10;
+}
+.topbar .brand{
+  font-weight:800;letter-spacing:.5px;
+  background:linear-gradient(120deg,#e9d5ff,#a855f7,#34d399);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.topbar .contest{
+  background:rgba(168,85,247,.14);border:1px solid rgba(168,85,247,.28);
+  padding:.35em 1em;border-radius:40px;
+  letter-spacing:.5px;
+}
+/* 主体场景 */
+.scene{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 8%;
+  text-align:center;
+}
+/* 每一幕 */
+.act{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 8%;
+  text-align:center;
+  opacity:0;
+  transition:opacity 1s ease;
+  pointer-events:none;
+}
+.act.on{opacity:1}
+/* 标题幕 */
+.act-title h1{
+  font-size:7vh;font-weight:900;letter-spacing:.05em;
+  background:linear-gradient(120deg,#f5edff,#d8b4fe,#a855f7,#34d399);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:2.2vh;line-height:1.15;
+  animation:floatIn 1s ease both;
+}
+.act-title .sub{
+  font-size:2vh;color:#cfc5e8;letter-spacing:.35em;margin-bottom:1.2vh;
+}
+.act-title .meta{
+  margin-top:2.4vh;display:flex;gap:1.4vh;flex-wrap:wrap;justify-content:center;
+}
+.act-title .meta span{
+  font-size:1.4vh;color:#c4b5fd;
+  background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.24);
+  padding:.4em 1.1em;border-radius:40px;
+}
+/* 诗句幕 */
+.act-poem .line1{
+  font-size:5.5vh;font-weight:800;letter-spacing:.08em;line-height:1.4;
+  color:#f3e8ff;
+  text-shadow:0 0 30px rgba(168,85,247,.5),0 0 60px rgba(168,85,247,.25);
+}
+.act-poem .line2{
+  font-size:5.5vh;font-weight:800;letter-spacing:.08em;line-height:1.4;
+  margin-top:1.2vh;
+  background:linear-gradient(120deg,#d8b4fe,#34d399);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 30px rgba(16,185,129,.4);
+}
+.act-poem .from{
+  margin-top:4vh;font-size:1.6vh;color:#b8a8dd;letter-spacing:.4em;
+}
+/* 名画幕 */
+.act-painting .paint{
+  width:70%;height:52%;
+  border-radius:1.2vh;
+  border:1px solid rgba(168,85,247,.35);
+  background:linear-gradient(160deg,#1a1040,#0a0620);
+  position:relative;overflow:hidden;
+  box-shadow:0 20px 60px -20px rgba(88,28,180,.9);
+}
+.act-painting .paint svg{display:block;width:100%;height:100%}
+.act-painting .paint-title{
+  margin-top:3vh;font-size:2.2vh;font-weight:800;color:#f3e8ff;
+}
+.act-painting .paint-meta{
+  margin-top:1vh;font-size:1.5vh;color:#b8a8dd;
+}
+/* 字幕 */
+.subtitle{
+  position:absolute;bottom:8%;left:5%;right:5%;
+  display:flex;flex-direction:column;align-items:center;gap:.6vh;
+  z-index:15;pointer-events:none;
+}
+.subtitle .cn{
+  font-size:2.1vh;font-weight:700;color:#f3e8ff;
+  text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 24px rgba(168,85,247,.5);
+  text-align:center;line-height:1.5;
+  background:rgba(5,3,15,.55);backdrop-filter:blur(6px);
+  padding:.5em 1.4em;border-radius:.6em;
+  border:1px solid rgba(168,85,247,.2);
+}
+.subtitle .en{
+  font-size:1.35vh;color:#c4b5fd;letter-spacing:.05em;
+  text-shadow:0 2px 8px rgba(0,0,0,.85);
+  background:rgba(5,3,15,.45);backdrop-filter:blur(6px);
+  padding:.3em 1.1em;border-radius:.5em;
+  border:1px solid rgba(168,85,247,.14);
+}
+/* 进度条 */
+.progress{
+  position:absolute;bottom:3.2%;left:5%;right:5%;
+  height:3px;background:rgba(168,85,247,.2);border-radius:4px;
+  overflow:hidden;z-index:16;
+}
+.progress .bar{
+  height:100%;width:0;
+  background:linear-gradient(90deg,#7c3aed,#a855f7,#34d399);
+  border-radius:4px;
+  transition:width .3s linear;
+}
+/* 时间码 */
+.timecode{
+  position:absolute;bottom:5.5%;right:5%;
+  font-size:1.2vh;color:#c4b5fd;letter-spacing:.1em;
+  font-family:monospace;
+  z-index:16;
+}
+/* 浮动粒子 */
+@keyframes floatIn{
+  from{opacity:0;transform:translateY(4vh) scale(.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes drift{
+  from{transform:translate(0,0)}
+  to{transform:translate(4vh,-3vh)}
+}
+@keyframes waveMove{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+@keyframes bloodFlow{
+  from{stroke-dashoffset:0}
+  to{stroke-dashoffset:-800}
+}
+/* 波浪动画 */
+.wave{
+  position:absolute;bottom:0;left:0;width:200%;height:22%;
+  opacity:.5;pointer-events:none;
+}
+.wave svg{width:100%;height:100%;animation:waveMove 14s linear infinite}
+.wave svg path{fill:url(#waveGrad)}
+/* 控制按钮（可选） */
+.controls{
+  position:absolute;top:3.5%;left:50%;transform:translateX(-50%);
+  display:flex;gap:.6vh;z-index:20;
+}
+.controls button{
+  background:rgba(168,85,247,.12);
+  border:1px solid rgba(168,85,247,.28);
+  color:#c4b5fd;cursor:pointer;
+  padding:.5em 1.1em;border-radius:40px;
+  font-size:1.3vh;font-family:inherit;
+  transition:.2s;letter-spacing:.05em;
+}
+.controls button:hover{background:rgba(168,85,247,.28);color:#fff}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- 顶部品牌条 -->
+  <div class="topbar">
+    <span class="brand">🌊 诗画流体 · 生命科学与流体流动</span>
+    <span class="contest">诗画流体力学创作大赛</span>
+  </div>
+
+  <!-- 控制按钮 -->
+  <div class="controls">
+    <button id="playBtn">▶ 播放 / 暂停</button>
+    <button id="resetBtn">↻ 重播</button>
+  </div>
+
+  <!-- 幕 1：标题 -->
+  <div class="act act-title on" data-act="1">
+    <h1>春江花月夜<br>潮汐与流体之美</h1>
+    <div class="sub">POETRY · PAINTING · FLUID MECHANICS</div>
+    <div class="meta">
+      <span>诗画流体力学创作大赛</span>
+      <span>生命科学与流体流动</span>
+      <span>张宇航 · 2026</span>
+    </div>
+  </div>
+
+  <!-- 幕 2：诗句 -->
+  <div class="act act-poem" data-act="2">
+    <div class="line1">春江潮水连海平</div>
+    <div class="line2">海上明月共潮生</div>
+    <div class="from">—— 唐 · 张若虚《春江花月夜》</div>
+  </div>
+
+  <!-- 幕 3：名画 -->
+  <div class="act act-painting" data-act="3">
+    <div class="paint">
+      <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="waveGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#7c3aed" stop-opacity=".9"/>
+            <stop offset="50%" stop-color="#a855f7" stop-opacity=".6"/>
+            <stop offset="100%" stop-color="#34d399" stop-opacity=".8"/>
+          </linearGradient>
+          <radialGradient id="sun" cx="80%" cy="20%" r="30%">
+            <stop offset="0%" stop-color="#f3e8ff"/>
+            <stop offset="60%" stop-color="#a855f7" stop-opacity=".5"/>
+            <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="800" height="450" fill="#0a0620"/>
+        <!-- 明月 -->
+        <circle cx="640" cy="90" r="70" fill="url(#sun)"/>
+        <circle cx="640" cy="90" r="38" fill="#f3e8ff" opacity=".95"/>
+        <!-- 星空 -->
+        <g fill="#d8b4fe" opacity=".8">
+          <circle cx="60" cy="60" r="1.8"/><circle cx="180" cy="40" r="1.4"/>
+          <circle cx="320" cy="70" r="1.8"/><circle cx="480" cy="50" r="1.4"/>
+          <circle cx="700" cy="40" r="1.8"/><circle cx="120" cy="180" r="1.4"/>
+          <circle cx="400" cy="140" r="1.6"/><circle cx="760" cy="200" r="1.4"/>
+        </g>
+        <!-- 大浪 -->
+        <path d="M0 300 Q100 250 200 290 T400 280 T600 300 T800 260 L800 450 L0 450 Z" fill="url(#waveGrad)" opacity=".75"/>
+        <path d="M0 340 Q120 300 240 330 T480 320 T720 340 T800 320 L800 450 L0 450 Z" fill="#7c3aed" opacity=".55"/>
+        <path d="M0 390 Q140 360 280 380 T560 370 T800 385 L800 450 L0 450 Z" fill="#34d399" opacity=".35"/>
+        <!-- 浪花 -->
+        <g stroke="#f3e8ff" stroke-width="2.5" fill="none" opacity=".9">
+          <path d="M420 260 Q440 230 470 250"/>
+          <path d="M450 240 Q480 210 515 235"/>
+          <path d="M490 250 Q520 225 555 245"/>
+          <path d="M530 265 Q560 240 595 260"/>
+        </g>
+        <!-- 小船 -->
+        <g fill="#d8b4fe" opacity=".85">
+          <path d="M180 330 Q200 320 220 330 L210 350 L190 350 Z"/>
+        </g>
+      </svg>
+    </div>
+    <div class="paint-title">神奈川冲浪里</div>
+    <div class="paint-meta">葛饰北斋 · 1831 · 浮世绘</div>
+  </div>
+
+  <!-- 幕 4：潮汐原理 -->
+  <div class="act act-tide" data-act="4">
+    <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" style="width:78%;height:70%">
+      <defs>
+        <radialGradient id="earth" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#34d399"/>
+          <stop offset="100%" stop-color="#10b981"/>
+        </radialGradient>
+        <radialGradient id="moon" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#f3e8ff"/>
+          <stop offset="100%" stop-color="#a855f7"/>
+        </radialGradient>
+      </defs>
+      <rect width="900" height="480" fill="transparent"/>
+      <!-- 地球 -->
+      <circle cx="450" cy="260" r="90" fill="url(#earth)" opacity=".9"/>
+      <circle cx="450" cy="260" r="90" fill="none" stroke="#6ee7b7" stroke-width="1.5" opacity=".6"/>
+      <!-- 海洋高亮（潮汐隆起） -->
+      <ellipse cx="450" cy="260" rx="120" ry="92" fill="none" stroke="#34d399" stroke-width="3" opacity=".7" stroke-dasharray="8 6"/>
+      <!-- 月亮 -->
+      <circle cx="740" cy="150" r="46" fill="url(#moon)" opacity=".95"/>
+      <text x="740" y="222" text-anchor="middle" fill="#d8b4fe" font-size="16" font-family="sans-serif">月球</text>
+      <!-- 引力箭头 -->
+      <g stroke="#f3e8ff" stroke-width="2" opacity=".75" stroke-dasharray="6 5">
+        <path d="M694 150 Q560 180 470 220" fill="none"/>
+        <path d="M694 160 Q560 220 470 250" fill="none"/>
+        <path d="M694 170 Q560 260 470 280" fill="none"/>
+      </g>
+      <!-- 文字 -->
+      <text x="450" y="60" text-anchor="middle" fill="#e9d5ff" font-size="22" font-weight="700" font-family="sans-serif">潮汐：引力驱动的周期性流动</text>
+      <text x="450" y="90" text-anchor="middle" fill="#8a7ab0" font-size="14" font-family="sans-serif">月球与太阳引力共同作用 · 海水周期性涨落</text>
+    </svg>
+  </div>
+
+  <!-- 幕 5：钱塘江大潮 -->
+  <div class="act act-tide-river" data-act="5">
+    <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" style="width:80%;height:72%">
+      <defs>
+        <linearGradient id="river" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7c3aed" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#34d399" stop-opacity=".5"/>
+        </linearGradient>
+      </defs>
+      <rect width="900" height="480" fill="transparent"/>
+      <text x="450" y="50" text-anchor="middle" fill="#e9d5ff" font-size="22" font-weight="700" font-family="sans-serif">钱塘江大潮 · 明渠流动</text>
+      <!-- 河道（漏斗形） -->
+      <path d="M100 380 L360 200 L540 200 L800 380 Z" fill="url(#river)" opacity=".35"/>
+      <path d="M100 380 L360 200" stroke="#a855f7" stroke-width="3" fill="none"/>
+      <path d="M800 380 L540 200" stroke="#a855f7" stroke-width="3" fill="none"/>
+      <!-- 潮头 -->
+      <path d="M340 220 Q450 190 560 220" stroke="#f3e8ff" stroke-width="4" fill="none"/>
+      <text x="450" y="180" text-anchor="middle" fill="#f3e8ff" font-size="15" font-family="sans-serif">潮头（Bore）</text>
+      <!-- 流速矢量 -->
+      <g stroke="#34d399" stroke-width="2" fill="none" opacity=".8">
+        <path d="M280 320 L360 280" />
+        <path d="M420 320 L500 280" />
+        <path d="M560 320 L640 280" />
+      </g>
+      <text x="450" y="440" text-anchor="middle" fill="#8a7ab0" font-size="14" font-family="sans-serif">流速越快 · 压强越低 · 伯努利方程</text>
+    </svg>
+  </div>
+
+  <!-- 幕 6：血液流动 -->
+  <div class="act act-blood" data-act="6">
+    <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" style="width:80%;height:72%">
+      <defs>
+        <linearGradient id="blood-v" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7c3aed"/>
+          <stop offset="50%" stop-color="#a855f7"/>
+          <stop offset="100%" stop-color="#34d399"/>
+        </linearGradient>
+      </defs>
+      <rect width="900" height="480" fill="transparent"/>
+      <text x="450" y="50" text-anchor="middle" fill="#e9d5ff" font-size="22" font-weight="700" font-family="sans-serif">生命中的流体 · 血液流动</text>
+      <!-- 血管 -->
+      <path d="M80 260 Q280 150 480 260 T820 260" stroke="url(#blood-v)" stroke-width="60" fill="none" opacity=".22" stroke-linecap="round"/>
+      <path d="M80 260 Q280 150 480 260 T820 260" stroke="url(#blood-v)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- 红细胞 -->
+      <g fill="#f3e8ff">
+        <circle cx="160" cy="225" r="9"/><circle cx="240" cy="200" r="9"/>
+        <circle cx="320" cy="200" r="9"/><circle cx="400" cy="215" r="9"/>
+        <circle cx="480" cy="250" r="9"/><circle cx="560" cy="268" r="9"/>
+        <circle cx="640" cy="268" r="9"/><circle cx="720" cy="262" r="9"/>
+      </g>
+      <!-- 流向 -->
+      <text x="450" y="410" text-anchor="middle" fill="#8a7ab0" font-size="14" font-family="sans-serif">心脏是泵 · 血管是管道 · 血液是流体</text>
+      <text x="450" y="440" text-anchor="middle" fill="#6ee7b7" font-size="14" font-family="sans-serif">与潮汐遵循同一套流体力学原理</text>
+    </svg>
+  </div>
+
+  <!-- 幕 7：多普勒 -->
+  <div class="act act-doppler" data-act="7">
+    <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" style="width:80%;height:72%">
+      <rect width="900" height="480" fill="transparent"/>
+      <text x="450" y="50" text-anchor="middle" fill="#e9d5ff" font-size="22" font-weight="700" font-family="sans-serif">多普勒超声 · 血流速度测量</text>
+      <!-- 探头 -->
+      <rect x="380" y="110" width="140" height="60" rx="14" fill="#7c3aed" opacity=".85"/>
+      <text x="450" y="148" text-anchor="middle" fill="#fff" font-size="16" font-weight="700" font-family="sans-serif">超声探头</text>
+      <!-- 声波 -->
+      <g stroke="#34d399" stroke-width="2" fill="none" opacity=".85">
+        <path d="M420 180 Q450 240 480 180" />
+        <path d="M400 200 Q450 290 500 200" />
+        <path d="M380 220 Q450 330 520 220" />
+      </g>
+      <!-- 血管 -->
+      <path d="M80 380 Q300 340 450 380 T820 380" stroke="#a855f7" stroke-width="26" fill="none" opacity=".35"/>
+      <path d="M80 380 Q300 340 450 380 T820 380" stroke="#a855f7" stroke-width="3" fill="none"/>
+      <!-- 红细胞 -->
+      <g fill="#f3e8ff">
+        <circle cx="180" cy="360" r="7"/><circle cx="280" cy="352" r="7"/>
+        <circle cx="380" cy="368" r="7"/><circle cx="480" cy="382" r="7"/>
+        <circle cx="580" cy="384" r="7"/><circle cx="680" cy="382" r="7"/>
+      </g>
+      <!-- 数据标注 -->
+      <text x="450" y="450" text-anchor="middle" fill="#6ee7b7" font-size="14" font-family="sans-serif">v = c · Δf / (2 · f₀ · cosθ)</text>
+      <text x="450" y="472" text-anchor="middle" fill="#8a7ab0" font-size="12" font-family="sans-serif">多普勒频移公式 · 无创测量血流速度</text>
+    </svg>
+  </div>
+
+  <!-- 幕 8：工程应用 -->
+  <div class="act act-application" data-act="8">
+    <div style="display:flex;gap:4vh;flex-wrap:wrap;justify-content:center;align-items:center">
+      <div style="text-align:center">
+        <div style="font-size:10vh;line-height:1;filter:drop-shadow(0 0 24px rgba(168,85,247,.8))">🌊</div>
+        <div style="margin-top:2vh;font-size:2vh;font-weight:800;color:#e9d5ff">潮汐发电</div>
+        <div style="margin-top:1vh;font-size:1.4vh;color:#b8a8dd">Tidal Power</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:10vh;line-height:1;filter:drop-shadow(0 0 24px rgba(16,185,129,.8))">🫀</div>
+        <div style="margin-top:2vh;font-size:2vh;font-weight:800;color:#e9d5ff">人工心脏</div>
+        <div style="margin-top:1vh;font-size:1.4vh;color:#b8a8dd">Artificial Heart</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:10vh;line-height:1;filter:drop-shadow(0 0 24px rgba(168,85,247,.8))">🐟</div>
+        <div style="margin-top:2vh;font-size:2vh;font-weight:800;color:#e9d5ff">仿生推进</div>
+        <div style="margin-top:1vh;font-size:1.4vh;color:#b8a8dd">Bio-propulsion</div>
+      </div>
+    </div>
+    <div style="margin-top:5vh;font-size:2.2vh;color:#cfc5e8;max-width:80%;line-height:1.7">
+      从潮汐发电到人工心脏，流体力学让诗意变成改变生活的力量。
+    </div>
+  </div>
+
+  <!-- 幕 9：结尾 -->
+  <div class="act act-end" data-act="9">
+    <h1 style="font-size:5vh;font-weight:900;letter-spacing:.05em;
+      background:linear-gradient(120deg,#f5edff,#d8b4fe,#a855f7,#34d399);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      line-height:1.3;margin-bottom:3vh">
+      赏中华诗词<br>析世界名画<br>品流体力学之美
+    </h1>
+    <div style="font-size:1.7vh;color:#b8a8dd;letter-spacing:.3em">
+      诗画流体力学创作大赛 · 生命科学与流体流动
+    </div>
+    <div style="margin-top:3vh;font-size:1.5vh;color:#8a7ab0">
+      张宇航 · 2026
+    </div>
+  </div>
+
+  <!-- 底部波浪 -->
+  <div class="wave">
+    <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="waveGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7c3aed" stop-opacity=".6"/>
+          <stop offset="50%" stop-color="#a855f7" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#34d399" stop-opacity=".5"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 60 Q150 20 300 60 T600 60 T900 60 T1200 60 L1200 120 L0 120 Z"/>
+    </svg>
+  </div>
+
+  <!-- 字幕 -->
+  <div class="subtitle">
+    <div class="cn" id="subCn">春江潮水连海平，海上明月共潮生</div>
+    <div class="en" id="subEn">The spring river tide rises with the sea, the bright moon over the sea shares the tide</div>
+  </div>
+
+  <!-- 进度条 -->
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="timecode" id="timecode">00:00 / 08:00</div>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     视频分镜数据（总时长约 8 分钟 = 480 秒）
+     ============================================================ */
+  const scenes = [
+    {
+      dur: 15,
+      cn: '春江潮水连海平，海上明月共潮生',
+      en: 'The spring river tide rises with the sea, the bright moon over the sea shares the tide'
+    },
+    {
+      dur: 40,
+      cn: '唐 · 张若虚《春江花月夜》',
+      en: 'Zhang Ruoxu, Tang Dynasty, "Spring River in the Flower Moon Night"'
+    },
+    {
+      dur: 50,
+      cn: '葛饰北斋《神奈川冲浪里》1831 · 浮世绘',
+      en: 'Hokusai, "The Great Wave off Kanagawa", 1831, Ukiyo-e'
+    },
+    {
+      dur: 60,
+      cn: '潮汐：月球与太阳引力驱动 · 海水周期性涨落',
+      en: 'Tides: driven by lunar & solar gravity · periodic rise and fall'
+    },
+    {
+      dur: 70,
+      cn: '钱塘江大潮 · 明渠流动 · 流速越快压强越低（伯努利方程）',
+      en: 'Qiantang Bore · Open-channel flow · Bernoulli equation'
+    },
+    {
+      dur: 70,
+      cn: '血液流动 · 心脏是泵 · 血管是管道 · 血液是流体',
+      en: 'Blood flow · heart as pump · vessels as pipes · blood as fluid'
+    },
+    {
+      dur: 60,
+      cn: '多普勒超声 · 血流速度测量 · 无创诊断',
+      en: 'Doppler ultrasound · blood velocity measurement · non-invasive'
+    },
+    {
+      dur: 50,
+      cn: '从潮汐发电到人工心脏 · 让诗意改变生活',
+      en: 'From tidal power to artificial heart · poetry becomes power'
+    },
+    {
+      dur: 65,
+      cn: '赏中华诗词 · 析世界名画 · 品流体力学之美',
+      en: 'Appreciate poetry · Analyze paintings · Taste the beauty of fluid mechanics'
+    }
+  ];
+
+  const acts = [...document.querySelectorAll('.act')];
+  const subCn = document.getElementById('subCn');
+  const subEn = document.getElementById('subEn');
+  const bar = document.getElementById('bar');
+  const timecode = document.getElementById('timecode');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let sceneIdx = 0;
+  let elapsedInScene = 0;
+  let totalElapsed = 0;
+  let timer = null;
+  let playing = false;
+  const TICK = 100; // 每 100ms 一次
+
+  const totalDur = scenes.reduce((s,x)=>s+x.dur,0);
+
+  function fmt(sec){
+    const m = Math.floor(sec/60).toString().padStart(2,'0');
+    const s = Math.floor(sec%60).toString().padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  function showScene(i){
+    acts.forEach(a => a.classList.remove('on'));
+    if(acts[i]) acts[i].classList.add('on');
+    const sc = scenes[i];
+    if(sc){
+      subCn.textContent = sc.cn;
+      subEn.textContent = sc.en;
+    }
+  }
+
+  function updateProgress(){
+    const p = Math.min(1, totalElapsed / totalDur);
+    bar.style.width = (p*100) + '%';
+    timecode.textContent = fmt(totalElapsed) + ' / ' + fmt(totalDur);
+  }
+
+  function tick(){
+    elapsedInScene += TICK/1000;
+    totalElapsed += TICK/1000;
+    if(elapsedInScene >= scenes[sceneIdx].dur){
+      elapsedInScene = 0;
+      sceneIdx++;
+      if(sceneIdx >= scenes.length){
+        // 循环播放
+        sceneIdx = 0;
+        totalElapsed = 0;
+        elapsedInScene = 0;
+        showScene(0);
+      } else {
+        showScene(sceneIdx);
+      }
+    }
+    updateProgress();
+  }
+
+  function play(){
+    if(playing) return;
+    playing = true;
+    playBtn.textContent = '⏸ 暂停';
+    timer = setInterval(tick, TICK);
+  }
+
+  function pause(){
+    playing = false;
+    playBtn.textContent = '▶ 播放 / 暂停';
+    if(timer){ clearInterval(timer); timer = null; }
+  }
+
+  function reset(){
+    pause();
+    sceneIdx = 0;
+    elapsedInScene = 0;
+    totalElapsed = 0;
+    showScene(0);
+    updateProgress();
+  }
+
+  playBtn.addEventListener('click',()=>{
+    playing ? pause() : play();
+  });
+  resetBtn.addEventListener('click', reset);
+
+  /* 初始化 */
+  showScene(0);
+  updateProgress();
+
+  /* 自动开始播放（可注释掉） */
+  setTimeout(play, 800);
+
+  /* 空格键控制 */
+  document.addEventListener('keydown',(e)=>{
+    if(e.code === 'Space'){
+      e.preventDefault();
+      playing ? pause() : play();
+    }
+    if(e.code === 'KeyR'){ reset(); }
+  });
+
+})();
+</script>
+</body>
+</html>
